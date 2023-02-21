@@ -107,3 +107,6 @@ my-electron-app/.DS_Store
 # Content folders
 Book
 Audio
+my-electron-app/src/.DS_Store
+
+public
