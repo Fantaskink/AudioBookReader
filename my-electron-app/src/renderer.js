@@ -1,6 +1,5 @@
 // Receive the text content of the PDF file from the main process
 ipcRenderer.on('load-pdf', (filePath) => {
-    console.log('PDF path:', filePath);
     loadPDF(filePath);
   
 });

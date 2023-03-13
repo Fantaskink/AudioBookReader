@@ -2,6 +2,11 @@
     --bleeding: 0.5cm;
     --margin: 1cm;
   }
+
+  @font-face {
+    font-family: "TimesNewRomanPSMT";
+    src: url("/Users/johan/GitHub/AudioBookReader/my-electron-app/Book/TimesNewRomanPSMT Regular.ttf");
+  }
   
   @page {
     size: A4;
@@ -25,7 +30,7 @@
     position: relative;
     height: 297mm;
     width: 210mm;
-    font-size: 16px;
+    font-size: 15px;
     font-family: "Times New Roman", Times, serif;
     line-height: normal;
     margin: 2em auto;

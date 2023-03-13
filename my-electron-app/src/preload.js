@@ -43,14 +43,15 @@ contextBridge.exposeInMainWorld('loadPDF', (filePath) => {
           // Extract the text from the content items
           for (let i = 0; i < textContent.items.length; i++) {
             const textItem = textContent.items[i];
-            const fontName = textItem.fontName;
-            const fontSize = textItem.height * textItem.transform[3];
+            
             const text = textItem.str;
-            const spacing = textItem.width / text.length;
+            
 
             const paragraph = document.createElement('p');
 
             paragraph.setAttribute('id','line ' + i);
+
+            //paragraph.style.lineHeight = distance;
 
             const pText = document.createTextNode(text);
 
