@@ -6,9 +6,6 @@ ipcRenderer.on('load-pdf', (filePath) => {
 const loadBookBtn = document.getElementById('open-book-link');
 const loadAudioBtn = document.getElementById('open-audio-link');
 
-const prevPageBtn = document.getElementById('previous-page');
-const nextPageBtn = document.getElementById('next-page');
-
 const pageInput = document.getElementById('page-input');
 
 loadBookBtn.addEventListener('click', function () {
@@ -17,14 +14,6 @@ loadBookBtn.addEventListener('click', function () {
 
 loadAudioBtn.addEventListener('click', function () {
   ipcRenderer.send('load-audio');
-});
-
-prevPageBtn.addEventListener('click', function () {
-  loadPage(-1);
-});
-
-nextPageBtn.addEventListener('click', function () {
-  loadPage(1);
 });
 
 pageInput.addEventListener('input', function (event) {

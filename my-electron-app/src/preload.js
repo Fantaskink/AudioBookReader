@@ -48,8 +48,8 @@ contextBridge.exposeInMainWorld('loadPage', (increment) => {
 });
 
 contextBridge.exposeInMainWorld('gotoPage', (pageNum) => {
-    console.log("Page number", pageNum);
     loadPage(path, parseInt(pageNum));
+    currentPage = pageNum;
 });
 
 
