@@ -3,14 +3,6 @@ ipcRenderer.on('load-pdf', (filePath) => {
     loadPDF(filePath);
 });
 
-ipcRenderer.on('next-page', (increment) => {
-  loadPage(increment)
-});
-
-ipcRenderer.on('previous-page', (increment) => {
-  loadPage(increment)
-});
-
 const loadBookBtn = document.getElementById('open-book-link');
 const loadAudioBtn = document.getElementById('open-audio-link');
 
