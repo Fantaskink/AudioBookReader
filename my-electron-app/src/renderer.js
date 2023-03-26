@@ -9,6 +9,8 @@ const loadAudioBtn = document.getElementById('open-audio-link');
 const prevPageBtn = document.getElementById('previous-page');
 const nextPageBtn = document.getElementById('next-page');
 
+const pageInput = document.getElementById('page-input');
+
 loadBookBtn.addEventListener('click', function () {
   ipcRenderer.send('load-book');
 });
@@ -23,4 +25,9 @@ prevPageBtn.addEventListener('click', function () {
 
 nextPageBtn.addEventListener('click', function () {
   loadPage(1);
+});
+
+pageInput.addEventListener('input', function (event) {
+  const value = event.target.value;
+  gotoPage(value);
 });

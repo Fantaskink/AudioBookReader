@@ -47,6 +47,11 @@ contextBridge.exposeInMainWorld('loadPage', (increment) => {
     currentPage = currentPage + increment;
 });
 
+contextBridge.exposeInMainWorld('gotoPage', (pageNum) => {
+    console.log("Page number", pageNum);
+    loadPage(path, parseInt(pageNum));
+});
+
 
 function loadPage(filePath, pageNum) {
 
