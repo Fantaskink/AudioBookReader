@@ -54,35 +54,47 @@ contextBridge.exposeInMainWorld('gotoPage', (pageNum) => {
 
 
 function loadPage(filePath, pageNum) {
-
     const pdfData = new Uint8Array(fs.readFileSync(filePath));
-
+  
     var canvas = document.getElementById("pdf-container");
     var context = canvas.getContext('2d');
-
+  
     // Load the PDF file from the typed array
     pdfjsLib.getDocument(pdfData.buffer).promise.then(pdf => {
-
-        pdf.getPage(pageNum).then(function (page) {
-          var scale = 1.5;
-          var viewport = page.getViewport({ scale: scale, textRenderingMode: 'smooth' });
-          
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-
-          scaleCanvas(canvas, context, canvas.width, canvas.height);
-
-          // Render the PDF page on the canvas
-         page.render({
-            canvasContext: context,
-            viewport: viewport,
-            imageLayer: true,
-          })
-          
+      pdf.getPage(pageNum).then(function (page) {
+        var scale = 1.5;
+        var viewport = page.getViewport({ scale: scale, textRenderingMode: 'smooth' });
+        
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+  
+        scaleCanvas(canvas, context, canvas.width, canvas.height);
+  
+        // Render the PDF page on the canvas
+        page.render({
+          canvasContext: context,
+          viewport: viewport,
+          imageLayer: true,
+        }).promise.then(() => {
+          // Search for and highlight the word "AMERICAN"
+          page.getTextContent().then(function (textContent) {
+            textContent.items.forEach(function (textItem) {
+              if (textItem.str.includes("AMERICAN")) {
+                highlightWord(canvas, context, textItem.transform[4], textItem.transform[5], textItem.width, textItem.height);
+              }
+            });
+          });
         });
+      });
     });
-}
+  }
 
+  function highlightWord(canvas, context, left, top, width, height) {
+    var highlightDiv = document.createElement('div');
+    highlightDiv.setAttribute('style', 'position:absolute; left:' + left + 'px; top:' + top + 'px; width:' + width + 'px; height:' + height + 'px; background-color:yellow;');
+    canvas.parentNode.appendChild(highlightDiv);
+  }
+  
 
 function scaleCanvas(canvas, context, width, height) {
     // assume the device pixel ratio is 1 if the browser doesn't specify it
@@ -98,19 +110,19 @@ function scaleCanvas(canvas, context, width, height) {
     // determine the actual ratio we want to draw at
     const ratio = devicePixelRatio / backingStoreRatio;
     if (devicePixelRatio !== backingStoreRatio) {
-    // set the 'real' canvas size to the higher width/height
-    canvas.width = width * ratio;
-    canvas.height = height * ratio;
-    // ...then scale it back down with CSS
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
+        // set the 'real' canvas size to the higher width/height
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+        // ...then scale it back down with CSS
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
     }
     else {
-    // this is a normal 1:1 device; just scale it simply
-    canvas.width = width;
-    canvas.height = height;
-    canvas.style.width = '';
-    canvas.style.height = '';
+        // this is a normal 1:1 device; just scale it simply
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style.width = '';
+        canvas.style.height = '';
     }
     // scale the drawing context so everything will work at the higher ratio
     context.scale(ratio, ratio);

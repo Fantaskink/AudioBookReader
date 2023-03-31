@@ -110,3 +110,4 @@ Audio
 my-electron-app/src/.DS_Store
 
 public
+.DS_Store
