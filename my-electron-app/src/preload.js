@@ -75,24 +75,9 @@ function loadPage(filePath, pageNum) {
           canvasContext: context,
           viewport: viewport,
           imageLayer: true,
-        }).promise.then(() => {
-          // Search for and highlight the word "AMERICAN"
-          page.getTextContent().then(function (textContent) {
-            textContent.items.forEach(function (textItem) {
-              if (textItem.str.includes("AMERICAN")) {
-                highlightWord(canvas, context, textItem.transform[4], textItem.transform[5], textItem.width, textItem.height);
-              }
-            });
-          });
-        });
+        })
       });
     });
-  }
-
-  function highlightWord(canvas, context, left, top, width, height) {
-    var highlightDiv = document.createElement('div');
-    highlightDiv.setAttribute('style', 'position:absolute; left:' + left + 'px; top:' + top + 'px; width:' + width + 'px; height:' + height + 'px; background-color:yellow;');
-    canvas.parentNode.appendChild(highlightDiv);
   }
   
 
