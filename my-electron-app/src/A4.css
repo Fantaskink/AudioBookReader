@@ -22,6 +22,8 @@
   
   body {
     background-color:dimgrey;
+    margin: 0;
+    padding: 0;
   }
   
   ul {
