@@ -1,22 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="ltr" mozdisallowselectionprint>
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Book Reader</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" href="A4.css">
+  <link rel="stylesheet" href="../node_modules/pdfjs-dist/web/pdf_viewer.css">
+  
 </head>
 
-<body style="--bleeding: 0.5cm;--margin: 1cm;">
+<body tabindex="1">
   <ul>
     <li><a id="open-book-link" href="#" class="myButton">Load Book</a></li>
     <li><a id="open-audio-link" href="#" class="myButton">Load Audio</a></li>
     <li>  <label for="page-input">Page</label> </li>
     <li> <input type="number" id="page-input"  value="1" min="1"> </li>
   </ul>
+
+  <div id="pageContainer" class="pdfViewer singlePageView"></div>
+  <div id="text-layer"></div>
+
 </body>
 <script src="renderer.js"></script>
 </html>

@@ -2,9 +2,16 @@ const { contextBridge, ipcRenderer } = require('electron');
 const pdfjsLib = require('pdfjs-dist');
 pdfjsLib.GlobalWorkerOptions.workerSrc = './public/pdfjs/build/pdf.worker.js';
 
+const CMAP_URL = '../node_modules/pdfjs-dist/cmaps/';
+const CMAP_PACKED = true;
+
+let PAGE_TO_VIEW = 1;
+
+const ENABLE_XFA = true;
+
 const fs = require('fs');
-let currentPage = 1;
-let path = "";
+
+let path = '';
 
 // Expose ipcRenderer to the renderer process
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -21,72 +28,85 @@ contextBridge.exposeInMainWorld('pdfjsLib', pdfjsLib);
 
 // Expose loadPDF to the renderer process
 contextBridge.exposeInMainWorld('loadPDF', (filePath) => {
-
     // Check if a canvas with id "pdf-container" exists and delete it
-    var existingCanvas = document.getElementById('pdf-container');
+    const existingCanvas = document.getElementById('pdf-container');
     if (existingCanvas) {
         existingCanvas.remove();
     }
 
     // Set the canvas dimensions to match the PDF page
-    var canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     canvas.id = 'pdf-container';
     document.body.appendChild(canvas);
 
     path = filePath;
-    loadPage(path, currentPage);
+    loadPage(path, PAGE_TO_VIEW);
 });
 
 contextBridge.exposeInMainWorld('loadPage', (increment) => {
-    if ((currentPage + increment) < 1) {
+    if ((PAGE_TO_VIEW + increment) < 1) {
         return;
     }
 
-    loadPage(path, currentPage + increment);
+    loadPage(path, PAGE_TO_VIEW + increment);
 
-    currentPage = currentPage + increment;
+    PAGE_TO_VIEW = PAGE_TO_VIEW + increment;
 });
 
 contextBridge.exposeInMainWorld('gotoPage', (pageNum) => {
     loadPage(path, parseInt(pageNum));
-    currentPage = pageNum;
+    PAGE_TO_VIEW = pageNum;
 });
 
-
-function loadPage(filePath, pageNum) {
+function loadPage (filePath, pageNum) {
     const pdfData = new Uint8Array(fs.readFileSync(filePath));
-  
-    var canvas = document.getElementById("pdf-container");
-    var context = canvas.getContext('2d');
-  
+
+    const canvas = document.getElementById('pdf-container');
+    const context = canvas.getContext('2d');
+
     // Load the PDF file from the typed array
     pdfjsLib.getDocument(pdfData.buffer).promise.then(pdf => {
-      pdf.getPage(pageNum).then(function (page) {
-        var scale = 1.5;
-        var viewport = page.getViewport({ scale: scale, textRenderingMode: 'smooth' });
-        
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-  
-        scaleCanvas(canvas, context, canvas.width, canvas.height);
-  
-        // Render the PDF page on the canvas
-        page.render({
-          canvasContext: context,
-          viewport: viewport,
-          imageLayer: true,
-        })
-      });
-    });
-  }
-  
+        pdf.getPage(pageNum).then(function (page) {
+            const scale = 1.5;
+            const viewport = page.getViewport({ scale, textRenderingMode: 'smooth' });
 
-function scaleCanvas(canvas, context, width, height) {
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            scaleCanvas(canvas, context, canvas.width, canvas.height);
+
+            // Render the PDF page on the canvas
+            page.render({
+                canvasContext: context,
+                viewport,
+                imageLayer: true
+            });
+
+            // Create a text layer for the PDF
+            const textLayerDiv = document.getElementById('text-layer');
+            const textLayer = textLayerDiv.appendChild(document.createElement('div'));
+            textLayer.setAttribute('style', 'position: absolute; left: ' + viewport.width + 'px; top: 0; width: ' + viewport.width + 'px; height: ' + viewport.height + 'px;');
+
+            // Render the text layer onto the canvas
+            const textContent = '';
+            page.getTextContent().then(function (textContent) {
+                pdfjsLib.renderTextLayer({
+                    textContent,
+                    container: textLayer,
+                    viewport,
+                    textDivs: []
+                });
+            });
+        });
+    });
+}
+
+function scaleCanvas (canvas, context, width, height) {
     // assume the device pixel ratio is 1 if the browser doesn't specify it
     const devicePixelRatio = window.devicePixelRatio || 1;
     // determine the 'backing store ratio' of the canvas context
     const backingStoreRatio = (
-    context.webkitBackingStorePixelRatio ||
+        context.webkitBackingStorePixelRatio ||
     context.mozBackingStorePixelRatio ||
     context.msBackingStorePixelRatio ||
     context.oBackingStorePixelRatio ||
@@ -101,8 +121,7 @@ function scaleCanvas(canvas, context, width, height) {
         // ...then scale it back down with CSS
         canvas.style.width = width + 'px';
         canvas.style.height = height + 'px';
-    }
-    else {
+    } else {
         // this is a normal 1:1 device; just scale it simply
         canvas.width = width;
         canvas.height = height;
@@ -111,4 +130,4 @@ function scaleCanvas(canvas, context, width, height) {
     }
     // scale the drawing context so everything will work at the higher ratio
     context.scale(ratio, ratio);
-    }
+}
