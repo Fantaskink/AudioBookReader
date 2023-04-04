@@ -19,6 +19,7 @@
     overflow: hidden;
     opacity: 0.2;
     line-height: 1.0;
+    z-index: 9999;
   }
   
   #pdf-container {

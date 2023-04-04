@@ -49,8 +49,6 @@ contextBridge.exposeInMainWorld('loadPDF', (filePath) => {
     textCanvas.id = 'text-layer';
     document.body.appendChild(textCanvas);
 
-    
-
     path = filePath;
     loadPage(path, PAGE_TO_VIEW);
 });
@@ -94,10 +92,14 @@ function loadPage (filePath, pageNum) {
                 imageLayer: true
             });
 
+
+
             // Create a text layer for the PDF
             const textLayerDiv = document.getElementById('text-layer');
+            textLayerDiv.innerHTML = '';
+
             const textLayer = textLayerDiv.appendChild(document.createElement('div'));
-            //textLayer.setAttribute('class', "textLayer");
+            textLayer.setAttribute('class', "textLayer");
             textLayer.setAttribute('style', 'position: absolute; left: ' + viewport.width + 'px; top: 0; width: ' + viewport.width + 'px; height: ' + viewport.height + 'px; line-height: 1.5;');
 
             // Render the text layer onto the canvas
