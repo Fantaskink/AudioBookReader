@@ -34,10 +34,22 @@ contextBridge.exposeInMainWorld('loadPDF', (filePath) => {
         existingCanvas.remove();
     }
 
+    const existingTextCanvas = document.getElementById('text-layer');
+    if (existingTextCanvas) {
+        existingTextCanvas.remove();
+    }
+
     // Set the canvas dimensions to match the PDF page
     const canvas = document.createElement('canvas');
     canvas.id = 'pdf-container';
     document.body.appendChild(canvas);
+
+    // Set the canvas dimensions to match the PDF page
+    const textCanvas = document.createElement('div');
+    textCanvas.id = 'text-layer';
+    document.body.appendChild(textCanvas);
+
+    
 
     path = filePath;
     loadPage(path, PAGE_TO_VIEW);
@@ -85,15 +97,17 @@ function loadPage (filePath, pageNum) {
             // Create a text layer for the PDF
             const textLayerDiv = document.getElementById('text-layer');
             const textLayer = textLayerDiv.appendChild(document.createElement('div'));
-            textLayer.setAttribute('style', 'position: absolute; left: ' + viewport.width + 'px; top: 0; width: ' + viewport.width + 'px; height: ' + viewport.height + 'px;');
+            //textLayer.setAttribute('class', "textLayer");
+            textLayer.setAttribute('style', 'position: absolute; left: ' + viewport.width + 'px; top: 0; width: ' + viewport.width + 'px; height: ' + viewport.height + 'px; line-height: 1.5;');
 
             // Render the text layer onto the canvas
             const textContent = '';
             page.getTextContent().then(function (textContent) {
+
                 pdfjsLib.renderTextLayer({
                     textContent,
                     container: textLayer,
-                    viewport,
+                    viewport: viewport,
                     textDivs: []
                 });
             });
